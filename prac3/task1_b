@@ -1,0 +1,63 @@
+.data 
+str: .asciiz "Enter the year "
+true: .asciiz "True"
+false: .asciiz  "False"
+year: .word 0
+
+.text
+
+# ask for year
+la $a0, str
+addi $v0, $0, 4
+syscall
+addi $v0, $0, 5
+syscall
+sw $v0, year 
+
+
+#load gobal (year) into $t1
+lw $t1, year
+
+
+#check if div by 4
+addi $t7, $0, 4
+div $t1, $t7
+mfhi $t2
+
+
+#check if div by 100
+addi $t7, $0, 100
+div $t1, $t7
+mfhi $t3
+
+#check if div by 400
+addi $t7, $0, 400
+div $t1, $t7
+mfhi $t4
+
+beq $t2, 0, ly1 #if %4 == 0, branch to ly1
+bne $t2, 0, pnly
+
+ly1:
+bne $t3, 0, ply 
+beq $t3, 0, ly2 #if %100 != 0, branch to ly2
+
+ly2:
+beq $t4, 0, ply #if %400 == 0, print
+bne $t4, 0, pnly
+#print is a leap year
+ply:
+la $a0, true
+addi $v0, $0, 4
+syscall
+addi $v0, $0, 10
+syscall
+
+#print not leap year
+pnly:
+la $a0, false
+addi $v0, $0, 4
+syscall
+addi $v0, $0, 10
+syscall
+
